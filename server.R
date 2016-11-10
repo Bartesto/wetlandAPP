@@ -84,7 +84,7 @@ shinyServer(function(input, output) {
       paste(input$wland, '-Mod-', Sys.Date(), '.jpeg', sep = '') 
     },
     content = function(file) {
-      ggsave(file, plot = modPlotInput(), device = 'jpeg', width = 15, 
+      ggsave(file, plot = modPlotInput(), width = 15, 
              height = 10, units = 'cm')
     }
   )
@@ -94,7 +94,7 @@ shinyServer(function(input, output) {
       paste(input$wland, '-Pred-', Sys.Date(), '.jpeg', sep = '') 
     },
     content = function(file) {
-      ggsave(file, plot = predPlotInput(), device = 'jpeg', width = 15, 
+      ggsave(file, plot = predPlotInput(), width = 15, 
              height = 10, units = 'cm')
     }
   )
