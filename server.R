@@ -81,20 +81,20 @@ shinyServer(function(input, output) {
   #MODEL
   output$downloadModPlot <- downloadHandler(
     filename = function() { 
-      paste(input$wland, '-Mod-', Sys.Date(), '.png', sep = '') 
+      paste(input$wland, '-Mod-', Sys.Date(), '.jpeg', sep = '') 
     },
     content = function(file) {
-      ggsave(file, plot = modPlotInput(), device = 'png', width = 15, 
+      ggsave(file, plot = modPlotInput(), device = 'jpeg', width = 15, 
              height = 10, units = 'cm')
     }
   )
   #PREDICTIONS
   output$downloadPredPlot <- downloadHandler(
     filename = function() { 
-      paste(input$wland, '-Pred-', Sys.Date(), '.png', sep = '') 
+      paste(input$wland, '-Pred-', Sys.Date(), '.jpeg', sep = '') 
     },
     content = function(file) {
-      ggsave(file, plot = predPlotInput(), device = 'png', width = 15, 
+      ggsave(file, plot = predPlotInput(), device = 'jpeg', width = 15, 
              height = 10, units = 'cm')
     }
   )
