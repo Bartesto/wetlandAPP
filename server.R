@@ -51,6 +51,7 @@ shinyServer(function(input, output) {
                  size = 2, shape = 3)+
       geom_point(data = b5modelled, aes(x = date, y = exp, colour='model'))+
       geom_line(data = b5modelled, aes(x = date, y = exp, colour = 'model'))+
+      scale_x_date(date_breaks = "1 year", date_labels = "%Y")+
       guides(colour = guide_legend(override.aes = list(shape = c(16, 3))))+
       scale_colour_manual(values = c('red', 'blue'),
                           name = '',
@@ -58,7 +59,8 @@ shinyServer(function(input, output) {
                           labels = c('modelled', 'measured'))+
       theme_bw()+
       ggtitle(paste0(input$wland, ' predictions'))+
-      theme(plot.title = element_text(size = 15, face = 'bold', hjust = 0))+
+      theme(plot.title = element_text(size = 15, face = 'bold', hjust = 0),
+            axis.text.x = element_text(angle = 90, vjust=0.5))+
       ylab('Depth (m)')+
       xlab('Date')
   }
