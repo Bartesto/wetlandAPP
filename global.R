@@ -148,8 +148,10 @@ pData <- function(df, model){
 
 ## GLOBAL DATA
 # Create global data sets
-b5 <- csvImportb5("data/dfb5.csv")
-hDepth <- csvImporth("data/dfhist.csv")
+b5 <- csvImportb5(list.files(path = "./data", pattern = "^dfb5*", 
+                             full.names = TRUE))
+hDepth <- csvImporth(list.files(path = "./data", pattern = "^dfhist*", 
+                                full.names = TRUE))
 mychoices <- choices(hDepth)
 bnames <- names(b5)
 dnames <- names(hDepth)
