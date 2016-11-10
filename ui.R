@@ -37,7 +37,9 @@ shinyUI(fluidPage(
                'Error threshold (m)' refers to allowable measurement error from 
                the field data. Adjusting these variables may improve the model 
                fit which can be guaged by the plot and model summary table. When 
-               happy with the model use the 'Download' buttons to access the data."),
+               happy with the model use the 'Download' buttons to access the data.
+               To be able to choose download location you might have to alter your 
+               browser settings."),
       br(),
       br(),
       br(),
