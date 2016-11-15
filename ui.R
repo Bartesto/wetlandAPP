@@ -1,7 +1,7 @@
 library(shiny)
 
 
-# Define UI for application
+## Define UI for application
 shinyUI(fluidPage(
   # tags$img(height = 114,
   #          width = 285,
