@@ -8,9 +8,15 @@ source("global.R")
 # Define server logic for app
 shinyServer(function(input, output) {
   
+  #Reactive data frame to test if enough data to model
+  df <- reactive({
+    df2model(input$wland, input$daydiff, input$thresh)
+    
+  })
+  
   #Model Plot
   modPlotInput <- function(){
-    df <- df2model(input$wland, input$daydiff, input$thresh)
+    df <- df()
     model <- mod(df)
     modData <- mData(df, model)
     
@@ -27,12 +33,25 @@ shinyServer(function(input, output) {
   }
   
   output$mod <- renderPlot({
+    
+    #validation test and error message
+    validate(
+      need(length(df()[,1]) > 4, "Sorry not enough historical data points to model")
+    )
+    #model plot
     modPlotInput()
     
   })
   
   #Stats Output
   output$modsum <- renderTable({
+    
+    #validation test and error message
+    validate(
+      need(length(df()[,1]) > 4, "Sorry not enough historical data points to model")
+    )
+    
+    #make table
     df <- df2model(input$wland, input$daydiff, input$thresh)
     model <- mod(df)
     glance(model)},include.rownames = FALSE)
@@ -47,10 +66,10 @@ shinyServer(function(input, output) {
     
     ggplot()+
       geom_point(data = hDepth.i,
-                 aes(x = date,  y = depth, colour = 'measured\ndepth'),
+                 aes(x = DATE,  y = depth, colour = 'measured\ndepth'),
                  size = 2, shape = 3)+
-      geom_point(data = b5modelled, aes(x = date, y = exp, colour='model'))+
-      geom_line(data = b5modelled, aes(x = date, y = exp, colour = 'model'))+
+      geom_point(data = b5modelled, aes(x = DATE, y = exp, colour='model'))+
+      geom_line(data = b5modelled, aes(x = DATE, y = exp, colour = 'model'))+
       scale_x_date(date_breaks = "1 year", date_labels = "%Y")+
       guides(colour = guide_legend(override.aes = list(shape = c(16, 3))))+
       scale_colour_manual(values = c('red', 'blue'),
@@ -66,6 +85,13 @@ shinyServer(function(input, output) {
   }
 
   output$pred <- renderPlot({
+    
+    #validation test and error message
+    validate(
+      need(length(df()[,1]) > 4, "Sorry not enough historical data points to model")
+    )
+    
+    #predictions plot
     predPlotInput()
   })
   
