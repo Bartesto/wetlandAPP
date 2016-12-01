@@ -15,23 +15,16 @@ load_or_install<-function(package_names)
   }  
 }  
 
-load_or_install(c("shiny", "ggplot2", "broom", "dplyr"))
+load_or_install(c("shiny", "ggplot2", "broom", "dplyr", "lubridate"))
                  
 
 ## GENERAL FUNCTIONS
-# CSV import helpers (different date formats)
-csvImportb5 <- function(x){
+# CSV import helper
+csvImport <- function(x){
   df <- read.csv(x, header = TRUE, stringsAsFactors = FALSE)
-  df$date <- as.Date(df$date, "%d/%m/%Y")
+  df$DATE <- as.Date(parse_date_time(df$DATE, orders = c("dmY", "Ymd")))
   df
 }
-
-csvImporth <- function(x){
-  df <- read.csv(x, header = TRUE, stringsAsFactors = FALSE)
-  df$date <- as.Date(df$date, "%Y-%m-%d")
-  df
-}
-
 # Function to create named list for selectInput choices
 choices <- function(x){
   hnames <- names(x)[-1]
@@ -51,30 +44,30 @@ df2model <- function(x, y, z){
   hist <- hist[complete.cases(hist),]
   
   #trim hist data set
-  mb5 <- min(b5$date)
-  hist <- hist[hist$date >= mb5, ]
-  names(hist) <- c("date_d", "depth")
+  mb5 <- min(b5$DATE)
+  hist <- hist[hist$DATE >= mb5, ]
+  names(hist) <- c("DATE_d", "depth")
   
   #b5 date only
-  datelist <- b5$date
+  datelist <- b5$DATE
   
   #depth date only
-  tomatch <- hist$date_d
+  tomatch <- hist$DATE_d
   
   #index to closest match between hDepth and b5
   ind <- sapply(tomatch, function(x) which.min(abs(datelist-x)))
   
   #subset band 5 values according to closest match up
   b5M <- b5[ind,]
-  names(b5M) <- c("date_b5", "b5")
+  names(b5M) <- c("DATE_b5", "b5")
   
   #combine matched band 5 values to depth values
   all <- cbind(b5M, hist)
   
   #reorder columns and calculate difference in dates
   all <- all%>%
-    select(date_b5, date_d, b5, depth)%>%
-    mutate(diff = abs(date_b5 - date_d))
+    select(DATE_b5, DATE_d, b5, depth)%>%
+    mutate(diff = abs(DATE_b5 - DATE_d))
   
   # data set with <= selected day differential
   df <- all%>%
@@ -93,7 +86,7 @@ dfpredhist <- function(x){
   idh <- match(x, dnames)#find hdepth data
   hist <- hDepth[,c(1,idh)]
   hist <- hist[complete.cases(hist),]
-  names(hist) <- c("date", "depth")
+  names(hist) <- c("DATE", "depth")
   return(hist)
   
 }
@@ -103,7 +96,7 @@ dfpredb5 <- function(x){
   id5 <- match(x, bnames)#find b5 data
   b5 <- b5[,c(1,id5)]
   b5 <- b5[complete.cases(b5),]
-  names(b5) <- c("date", "b5")
+  names(b5) <- c("DATE", "b5")
   return(b5)
 }
 
@@ -141,18 +134,19 @@ mData <- function(df, model){
 pData <- function(df, model){
   fitexp <- model
   predexp <- exp(predict(fitexp, data.frame(b5 = df$b5)))
-  b5modelled <- data.frame(date = df$date, b5 = df$b5, exp = predexp)
+  b5modelled <- data.frame(DATE = df$DATE, b5 = df$b5, exp = predexp)
   return(b5modelled)
 }
 
 
 ## GLOBAL DATA
 # Create global data sets
-b5 <- csvImportb5(list.files(path = "./data", pattern = "^dfb5*", 
+b5 <- csvImport(list.files(path = "./data", pattern = "^dfb5*", 
                              full.names = TRUE))
-hDepth <- csvImporth(list.files(path = "./data", pattern = "^dfhist*", 
+hDepth <- csvImport(list.files(path = "./data", pattern = "^dfhist*", 
                                 full.names = TRUE))
-mychoices <- choices(hDepth)
+mychoices <- choices(b5)
 bnames <- names(b5)
 dnames <- names(hDepth)
+
 
