@@ -101,9 +101,15 @@ dfpredb5 <- function(x){
 }
 
 # Function to fit log model
-mod <- function(df){
-  fitexp <- lm(log(depth.i) ~ b5, data = df)
-  return(fitexp)
+mod <- function(df, modtype){
+  if(modtype == 1){
+    fitexp <- lm(log(depth.i) ~ b5, data = df)
+    return(fitexp)
+  } else {
+    fitlin <- lm(depth.i ~ b5, data = df)
+    return(fitlin)
+  }
+  
 }
 
 # Function to return p.value from model (not used now)
@@ -116,26 +122,47 @@ lmp <- function (model) {
 }
 
 # Function to create df of model (used in mod plot)
-mData <- function(df, model){
-  fitexp <- model
-  MyData      <- data.frame(X1 = seq(range(df$b5)[1], range(df$b5)[2], 
-                                     length = 40))# restrict to modelled data range
-  X           <- model.matrix(~ X1, data = MyData) # obtain matrix
-  MyData$eta  <- X %*% coef(fitexp)# matrix multiplication!!
-  MyData$ExpY <- exp(MyData$eta)# account for log link
-  MyData$SE   <- sqrt(diag(X %*% vcov(fitexp) %*% t(X)))
-  MyData$ub   <- exp(MyData$eta + 1.96 * MyData$SE)
-  MyData$lb   <- exp(MyData$eta - 1.96 * MyData$SE)
-  
-  return(MyData)
+mData <- function(df, model, modtype){
+  if(modtype == 1){
+    fitexp <- model
+    MyData      <- data.frame(X1 = seq(range(df$b5)[1], range(df$b5)[2], 
+                                       length = 40))# restrict to modelled data range
+    X           <- model.matrix(~ X1, data = MyData) # obtain matrix
+    MyData$eta  <- X %*% coef(fitexp)# matrix multiplication!!
+    MyData$pred <- exp(MyData$eta)# account for log link
+    MyData$SE   <- sqrt(diag(X %*% vcov(fitexp) %*% t(X)))
+    MyData$ub   <- exp(MyData$eta + 1.96 * MyData$SE)
+    MyData$lb   <- exp(MyData$eta - 1.96 * MyData$SE)
+    return(MyData)
+  } else {
+    fitlin <- model
+    MyData      <- data.frame(X1 = seq(range(df$b5)[1], range(df$b5)[2], 
+                                       length = 40))# restrict to modelled data range
+    X           <- model.matrix(~ X1, data = MyData) # obtain matrix
+    MyData$eta  <- X %*% coef(fitlin)# matrix multiplication!!
+    MyData$pred <- MyData$eta
+    MyData$SE   <- sqrt(diag(X %*% vcov(fitlin) %*% t(X)))
+    MyData$ub   <- MyData$eta + 1.96 * MyData$SE
+    MyData$lb   <- MyData$eta - 1.96 * MyData$SE
+    return(MyData)
+  }
 }
 
 # Function to create df of prediction values (used in pred plot)
-pData <- function(df, model){
-  fitexp <- model
-  predexp <- exp(predict(fitexp, data.frame(b5 = df$b5)))
-  b5modelled <- data.frame(DATE = df$DATE, b5 = df$b5, exp = predexp)
-  return(b5modelled)
+pData <- function(df, model, modtype){
+  if(modtype == 1){
+    model <- model
+    predexp <- exp(predict(model, data.frame(b5 = df$b5)))
+    b5modelled <- data.frame(DATE = df$DATE, b5 = df$b5, prediction = predexp)
+    return(b5modelled)
+  } else {
+    model <- model
+    pred <- predict(model, data.frame(b5 = df$b5))
+    b5modelled <- data.frame(DATE = df$DATE, b5 = df$b5, prediction = pred)
+    b5modelled$prediction[b5modelled$prediction < 0] <- 0
+    return(b5modelled)
+  }
+  
 }
 
 
