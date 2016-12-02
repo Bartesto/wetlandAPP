@@ -17,16 +17,17 @@ shinyServer(function(input, output) {
   #Model Plot
   modPlotInput <- function(){
     df <- df()
-    model <- mod(df)
-    modData <- mData(df, model)
+    model <- mod(df, input$mod)
+    modData <- mData(df, model, input$mod)
+    modname <- ifelse(input$mod == 1, "log-model", "linear-model")
     
     ggplot()+
       geom_point(data = df, aes_string(x = 'b5', y = 'depth.i'))+
-      geom_line(data = modData, aes(x = X1, y = ExpY), col = 'red', size = 1)+
+      geom_line(data = modData, aes(x = X1, y = pred), col = 'red', size = 1)+
       geom_ribbon(data = modData, aes(x = X1, ymax = ub, ymin = lb ), alpha = 0.2)+
       theme_bw()+
-      ggtitle(paste0(input$wland, ' model'))+
-      theme(plot.title = element_text(size = 15, face = "bold", hjust = 0))+
+      ggtitle(paste0(input$wland, ' model ', modname))+
+      theme(plot.title = element_text(size = 13, face = "bold", hjust = 0))+
       xlab('Band 5')+
       ylab('Depth (m)')
     
@@ -53,23 +54,24 @@ shinyServer(function(input, output) {
     
     #make table
     df <- df2model(input$wland, input$daydiff, input$thresh)
-    model <- mod(df)
+    model <- mod(df, input$mod)
     glance(model)},include.rownames = FALSE)
   
   #Predictions Plot
   predPlotInput <- function(){
     df <- df2model(input$wland, input$daydiff, input$thresh)
-    model <- mod(df)
+    model <- mod(df, input$mod)
     hDepth.i <- dfpredhist(input$wland)
     b5.i <- dfpredb5(input$wland)
-    b5modelled <- pData(b5.i, model)
+    b5modelled <- pData(b5.i, model, input$mod)
+    modname <- ifelse(input$mod == 1, "log-model", "linear-model")
     
     ggplot()+
       geom_point(data = hDepth.i,
                  aes(x = DATE,  y = depth, colour = 'measured\ndepth'),
                  size = 2, shape = 3)+
-      geom_point(data = b5modelled, aes(x = DATE, y = exp, colour='model'))+
-      geom_line(data = b5modelled, aes(x = DATE, y = exp, colour = 'model'))+
+      geom_point(data = b5modelled, aes(x = DATE, y = prediction, colour='model'))+
+      geom_line(data = b5modelled, aes(x = DATE, y = prediction, colour = 'model'))+
       scale_x_date(date_breaks = "1 year", date_labels = "%Y")+
       guides(colour = guide_legend(override.aes = list(shape = c(16, 3))))+
       scale_colour_manual(values = c('red', 'blue'),
@@ -77,9 +79,10 @@ shinyServer(function(input, output) {
                           breaks = c( 'model', 'measured\ndepth'),
                           labels = c('modelled', 'measured'))+
       theme_bw()+
-      ggtitle(paste0(input$wland, ' predictions'))+
-      theme(plot.title = element_text(size = 15, face = 'bold', hjust = 0),
-            axis.text.x = element_text(angle = 90, vjust=0.5))+
+      ggtitle(paste0(input$wland, ' predictions ', modname))+
+      theme(plot.title = element_text(size = 13, face = 'bold', hjust = 0),
+            axis.text.x = element_text(angle = 90, vjust=0.5),
+            legend.position = "bottom")+
       ylab('Depth (m)')+
       xlab('Date')
   }
@@ -98,18 +101,19 @@ shinyServer(function(input, output) {
   #Data for export
   datasetInput <- function(){
     df <- df2model(input$wland, input$daydiff, input$thresh)
-    model <- mod(df)
+    model <- mod(df, input$mod)
     hDepth.i <- dfpredhist(input$wland)
     b5.i <- dfpredb5(input$wland)
-    b5modelled <- pData(b5.i, model)
+    b5modelled <- pData(b5.i, model, input$mod)
     return(b5modelled)
   }
   
   ##Download Buttons
   #MODEL
   output$downloadModPlot <- downloadHandler(
-    filename = function() { 
-      paste(input$wland, '-Mod-', Sys.Date(), '.jpeg', sep = '') 
+    filename = function() {
+      modname <- ifelse(input$mod == 1, "log-model-", "linear-model-")
+      paste(input$wland, '-Mod-', modname, Sys.Date(), '.jpeg', sep = '') 
     },
     content = function(file) {
       ggsave(file, plot = modPlotInput(), width = 15, 
@@ -118,8 +122,9 @@ shinyServer(function(input, output) {
   )
   #PREDICTIONS
   output$downloadPredPlot <- downloadHandler(
-    filename = function() { 
-      paste(input$wland, '-Pred-', Sys.Date(), '.jpeg', sep = '') 
+    filename = function() {
+      modname <- ifelse(input$mod == 1, "log-model-", "linear-model-")
+      paste(input$wland, '-Pred-', modname, Sys.Date(), '.jpeg', sep = '') 
     },
     content = function(file) {
       ggsave(file, plot = predPlotInput(), width = 15, 
@@ -128,11 +133,12 @@ shinyServer(function(input, output) {
   )
   #PREDICTIONS DATA
   output$downloadData <- downloadHandler(
-    filename = function() { 
-      paste(input$wland, '-Pred-', Sys.Date(),'.csv', sep = '') 
+    filename = function() {
+      modname <- ifelse(input$mod == 1, "log-model-", "linear-model-")
+      paste(input$wland, '-Pred-', modname, Sys.Date(),'.csv', sep = '') 
     },
     content = function(file) {
-      write.csv(datasetInput(), file)
+      write.csv(datasetInput(), file, row.names = FALSE)
     }
   )
 })
