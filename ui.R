@@ -17,9 +17,9 @@ shinyUI(fluidPage(
                   choices = mychoices),
       helpText("Choose the number of days allowed between measured depth and 
                satellite data for the model"),
-      numericInput("daydiff", "Days difference", value = 10),
+      numericInput("daydiff", "Dd - Days difference", value = 10),
       helpText("Choose margin of error for depth measurement"),
-      numericInput("thresh", "Error threshold (m)", value = 0, min = 0, 
+      numericInput("thresh", "Et - Error threshold (m)", value = 0, min = 0, 
                    max = 0.1, step = 0.01),
       radioButtons("mod", "Model Type:",
                    choices = list("Log Model" = 1,
