@@ -146,7 +146,7 @@ shinyServer(function(input, output) {
     },
     content = function(file) {
       write.table(datasetInput1(), file, sep = ",", row.names = FALSE, 
-                  col.names = False)
+                  col.names = FALSE)
       write.table(datasetInput2(), file, sep = ",", row.names = FALSE, 
                   append = TRUE)
       
