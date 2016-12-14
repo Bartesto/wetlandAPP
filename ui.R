@@ -11,7 +11,7 @@ shinyUI(fluidPage(
   titlePanel(("SWWMP Modeller")),
   sidebarLayout(
     sidebarPanel(
-      h3("Model a wetland's depth using USGS Landsat band 5 data"),
+      h3("Model a wetland's depth using USGS Landsat shortwave infrared data"),
       helpText("Choose a wetland to model"),
       selectInput("wland", "Wetland:",
                   choices = mychoices),
@@ -31,10 +31,11 @@ shinyUI(fluidPage(
       br(),
       br(),
       h4("General Info"),
-      helpText("USGS Landsat band 5 data has been extracted from the historical 
-               archive for each wetland available in the dropdown list above. 
-               These values are then matched with depth measurements obtained from
-               field visits. A logarithmic model is then used."),
+      helpText("USGS Landsat shortwave infrared data has been extracted from the 
+               historical archive for each wetland available in the dropdown list 
+               above. These values are then matched with depth measurements 
+               obtained from field visits. A choice of either logarithmic or linear 
+               model is then used to model wetland depth."),
       helpText("There are two variables available for adjustment to improve model 
                fit. 'Days difference' refers to the number of days allowed between
                a depth measurement in the field and available satellite data. 
@@ -42,7 +43,7 @@ shinyUI(fluidPage(
                the field data. Adjusting these variables may improve the model 
                fit which can be guaged by the plot and model summary table. When 
                happy with the model use the 'Download' buttons to access the data.
-               To be able to choose download location you might have to alter your 
+               To be able to choose a download location you might have to alter your 
                browser settings."),
       br(),
       br(),
