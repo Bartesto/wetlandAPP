@@ -26,9 +26,9 @@ shinyServer(function(input, output) {
       geom_line(data = modData, aes(x = X1, y = pred), col = 'red', size = 1)+
       geom_ribbon(data = modData, aes(x = X1, ymax = ub, ymin = lb ), alpha = 0.2)+
       theme_bw()+
-      ggtitle(paste0(input$wland, ' model ', modname))+
+      ggtitle(paste0(input$wland, " ", modname))+
       theme(plot.title = element_text(size = 13, face = "bold", hjust = 0))+
-      xlab('Band 5')+
+      xlab('shortwave infrared (DN)')+
       ylab('Depth (m)')
     
   }
@@ -99,7 +99,14 @@ shinyServer(function(input, output) {
   })
   
   #Data for export
-  datasetInput <- function(){
+  datasetInput1 <- function(){
+    df <- df2model(input$wland, input$daydiff, input$thresh)
+    model <- mod(df, input$mod)
+    head <- csvHead(model, input$daydiff, input$thresh)
+    return(head)
+  }
+  
+  datasetInput2 <- function(){
     df <- df2model(input$wland, input$daydiff, input$thresh)
     model <- mod(df, input$mod)
     hDepth.i <- dfpredhist(input$wland)
@@ -138,7 +145,11 @@ shinyServer(function(input, output) {
       paste(input$wland, '-Pred-', modname, Sys.Date(),'.csv', sep = '') 
     },
     content = function(file) {
-      write.csv(datasetInput(), file, row.names = FALSE)
+      write.table(datasetInput1(), file, sep = ",", row.names = FALSE, 
+                  col.names = False)
+      write.table(datasetInput2(), file, sep = ",", row.names = FALSE, 
+                  append = TRUE)
+      
     }
   )
 })
