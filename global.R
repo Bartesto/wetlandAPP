@@ -171,11 +171,11 @@ csvHead <- function(mod, dd, et){
   p0 <- "Parameters"
   p1 <- paste0("Days difference: ", dd)
   p2 <- paste0("Error threshold: ", et)
-  eqn <- 
-    paste0("y ~ ", round(coefficients(mod)[1],2), "", 
-           paste(sprintf(" %+.2f*%s ", coefficients(mod)[-1], 
-                         names(coefficients(mod)[-1])), collapse=""))
-  header <- c(title, p0, p1, p2, eqn)
+  # eqn <- 
+  #   paste0("y ~ ", round(coefficients(mod)[1],2), "", 
+  #          paste(sprintf(" %+.2f*%s ", coefficients(mod)[-1], 
+  #                        names(coefficients(mod)[-1])), collapse=""))
+  header <- c(title, p0, p1, p2)
   return(header)
 }
 
