@@ -1,0 +1,78 @@
+---
+title: "The Wetland App"
+author: "Bart Huntley"
+date: "2 December 2016"
+output: html_document
+---
+
+##Introduction
+Wetlands that are part of the South West Wetlands Monitoring Program (SWWMP) have had various metrics gathered from field visits over time. The Remote Sensing and Spatial Analysis section (RSSA) have been asked to attempt to model wetland depths utilising Landsat data and water depths gathered from field visits. If successful a hyroperiod can be inferred for times when there are no field records or for future Landsat data.
+
+The wetlandAPP was designed to assist with model selection when attempting to infer water depths.The APP allows the user to select a wetland, adjust some parameters affecting model fit, assess the fit and then export graphs of the model, predicted water depths and a .csv file of predictions data.
+
+##How?
+The United States Geological Survey (USGS), maintain an archive of Landsat imagery dating back to the late 1980's. The RSSA section has downloaded and processed suitable Landsat scenes from the USGS. Processing involves calibrating the scenes to top of atmosphere and cloud quality control. 
+
+The short wave infrared (SWIR) band captured by Landsat sensors is readily absorbed by water and is commonly used to create water masks and in this instance model water depth in shallow water bodies. Extents of the SWWMP wetlands are used to extract SWIR values for all image dates in the processed archive of Landsat data held by the RSSA section. The dates of the data are then paired with the closest matching date of field depth measurements obtained from the Wetlands group from DPaW.
+
+Plotting the paired data reveals a negative logarithmic relationship between the measured depths and the SWIR band. The matching pairs of data can then be modelled using a linear model with a log transformed depth measurement. In some cases (very shallow wetlands), a linear model with no transformations can also be used.
+
+The selected model can then be used to 'predict' a depth for all SWIR values for all dates of imagery.
+
+##The APP
+### Running The APP
+At present the APP is housed in a GitHub repo. All modifications to the APP and updates to the extracted SWIR data are made locally, committed and then pushed to the repo. To run the APP you will need to have R installed on your machine and the package "shiny" installed. 
+
+Open up an R or RStudio session, copy paste and run the following:
+```{r, eval = FALSE}
+library(shiny)
+runGitHub("wetlandAPP", "Bartesto")
+```
+
+###User Inputs
+If you run the above in RStudio, the APP is likely to open up in a separate window or viewer pane. For full functionality, select the "open in browser" option from the menu at the top of the APP page. This will now open in your default browser ensuring full functionality.
+
+Once open the user inputs are available down the left hand side of the APP. 
+
+1. **Select a wetland.** Choice is made by selecting from the drop down list the four letter code for your wetland of choice.
+
+2. **Select days difference.** This refers to the amount of days allowed between the measured depth data and the satellite data. Due to cloud cover or overpass schedule, satellite data is often not available when depth measurements are taken. This parameter defaults to allow 10 days. The geology of a particular wetland may mean that this value needs adjusting.
+
+3. **Select error threshold.** This refers to the estimate of measurement error for the field depth measurements. It defaults to zero and has 10 cm increments .
+
+4. **Select model type.** Most of the data appears to have a logarithmic relationship. The default is a log model (refers to a linear model with log transformed field depths) however a linear model with no transformations is available. The linear model does appear to be better at handling very shallow wetlands. **PLEASE NOTE** - a linear model with no transformation will produce *negative predicted depths* . For plotting and exporting all *negative values* have been zeroed.
+
+The APP displays a plot of the selected model fit in the top pane, a table with summary statistics of model fit and a plot of predicted depths superimposed with field depth measurements.
+
+Altering any of the inputs above will create live changes to the plots and table in the APP. It is intended that the user will assess model fit visually (by looking at fit in the plots) and by summary statistics as displayed in the table between the two plots.
+
+**PLEASE NOTE** that there needs to be more than 4 field measured depths for any wetland to be able to model depth. For some wetlands there is just not enough data to model and in other instances this situation can also arise due to choice of user inputs. The inputs 'Days difference' and 'Error threshold (m)' are not model parameters per se but apply filters to the data used in the model.
+
+##User Downloads
+To get the downloads to save to a folder of your choice make sure you have adjusted your settings in your browser to allow this. It is usually in 'Advanced Settings' and the option will be something like 'Ask location for each download'. All downloadable outputs conatain details of the choice of user input.
+
+1. **Model Plot**. Will download a .jpeg version of the plot of the model (top pane in APP).
+
+2. **Predictions Plot**. Will download a .jpeg version of the plot of the predictions and the field depth measurements (bottom pane in APP).
+
+3. **Predictions Data**. Will download the SWIR value and predicted depth (m) for each date of satellite data as a .csv file.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
