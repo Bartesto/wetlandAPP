@@ -26,7 +26,8 @@ shinyServer(function(input, output) {
       geom_line(data = modData, aes(x = X1, y = pred), col = 'red', size = 1)+
       geom_ribbon(data = modData, aes(x = X1, ymax = ub, ymin = lb ), alpha = 0.2)+
       theme_bw()+
-      ggtitle(paste0(input$wland, " ", modname))+
+      ggtitle(paste0(input$wland, " ", modname,
+                     "  (Dd:", input$daydiff, "  Et:", input$thresh, ")"))+
       theme(plot.title = element_text(size = 13, face = "bold", hjust = 0))+
       xlab('shortwave infrared (DN)')+
       ylab('Depth (m)')
@@ -79,7 +80,8 @@ shinyServer(function(input, output) {
                           breaks = c( 'model', 'measured\ndepth'),
                           labels = c('modelled', 'measured'))+
       theme_bw()+
-      ggtitle(paste0(input$wland, ' predictions ', modname))+
+      ggtitle(paste0(input$wland, ' predictions ', modname, 
+                     "  (Dd:", input$daydiff, "  Et:", input$thresh, ")"))+
       theme(plot.title = element_text(size = 13, face = 'bold', hjust = 0),
             axis.text.x = element_text(angle = 90, vjust=0.5),
             legend.position = "bottom")+
