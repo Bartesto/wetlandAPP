@@ -13,6 +13,9 @@ shinyServer(function(input, output) {
     df2model(input$wland, input$daydiff, input$thresh)
     
   })
+  output$numwlands <- renderText({
+    paste0("Choose one of  ", length(mychoices), " wetlands.")
+  })
   
   #Model Plot
   modPlotInput <- function(){
@@ -98,6 +101,24 @@ shinyServer(function(input, output) {
     
     #predictions plot
     predPlotInput()
+  })
+  
+  output$textfd <- renderText({
+    dfpred <- dfpredb5(input$wland)
+    paste0("First date of satellite data: ", format(head(dfpred[,1], n=1),
+                                                    "%d-%m-%Y"))
+  })
+  
+  output$textld <- renderText({
+    dfpred <- dfpredb5(input$wland)
+    paste0("Last date of satellite data: ", format(tail(dfpred[,1], n=1), 
+                                                   "%d-%m-%Y"))
+  })
+  
+  output$textsc <- renderText({
+    dfpred <- dfpredb5(input$wland)
+    paste0("Number of suitable scenes for ", input$wland, ": ",
+           length(na.omit(dfpred[,2])))
   })
   
   #Data for export
