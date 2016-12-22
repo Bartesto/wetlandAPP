@@ -1,18 +1,16 @@
 library(shiny)
+library(shinythemes)
+library(shinyjs)
 
 
 # Define UI for application
 shinyUI(fluidPage(
-  # tags$img(height = 114,
-  #          width = 285,
-  #          src = "DPaW_logo.png"),
-  # br(),
-  # br(),
+  #theme = shinytheme("paper"),
   titlePanel(("SWWMP Modeller")),
   sidebarLayout(
     sidebarPanel(
       h3("Model a wetland's depth using USGS Landsat shortwave infrared data"),
-      helpText("Choose a wetland to model"),
+      textOutput("numwlands"),
       selectInput("wland", "Wetland:",
                   choices = mychoices),
       helpText("Choose the number of days allowed between measured depth and 
@@ -58,7 +56,13 @@ shinyUI(fluidPage(
       tableOutput("modsum"),
       br(),
       br(),
-      plotOutput("pred")
+      plotOutput("pred"),
+      br(),
+      br(),
+      h4("Data Info"),
+      textOutput("textfd"),
+      textOutput("textld"),
+      textOutput("textsc")
     )
   )
 )
